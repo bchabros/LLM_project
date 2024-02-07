@@ -21,7 +21,7 @@ def load_document(file):
     else:
         print('Document format is not supported!')
         return None
-
+ 
     data = loader.load()
     return data
 
@@ -42,7 +42,7 @@ def ask_and_get_answer(vector_store, q, k=3):
     from langchain.chat_models import ChatOpenAI
 
     llm = ChatOpenAI(model='gpt-3.5-turbo',
-                     temperature=1)
+                     temperature=0.5)
     
     retriever = vector_store.as_retriever(search_type='similarity',
                                           search_kwargs={'k': k})
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     from dotenv import load_dotenv, find_dotenv
     load_dotenv(find_dotenv(), override=True)
 
-    st.image('img.png')
+    #st.image('img.png')
     st.subheader('LLM Question-Answering Application')
     with st.sidebar:
         api_key = st.text_input('OpenAI API Key:', type='password')
@@ -117,23 +117,5 @@ if __name__ == "__main__":
             st.session_state.history = f'{value} \n {"-" * 100} \n {st.session_state.history}'
             h = st.session_state.history
             st.text_area(label='Chat History', value=h, key='history', height=400)
-        
-                
-        
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+            
