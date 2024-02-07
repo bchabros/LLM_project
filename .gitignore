@@ -1,6 +1,24 @@
+__pycache__/
+
+# envirnoment
 .env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+.ipynb_checkpoints/
 *.ipynb_checkpoints
+
+.DS_Store
+
 files
 99-Data
 99-Streamlit
-00-fine_tune_prepare.ipynb 
+99-Data/
+99-Streamlit/
+00-fine_tune_prepare.ipynb
