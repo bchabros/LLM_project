@@ -1,7 +1,7 @@
 import streamlit as st
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
-import os
+
 
 def load_document(file):
     import os
@@ -21,21 +21,22 @@ def load_document(file):
     else:
         print('Document format is not supported!')
         return None
- 
-    data = loader.load()
-    return data
 
-def chunk_data(data, chunk_size=256, chunk_overlap=20):
+    return loader.load()
+
+
+def chunk_data(data_chunk, chunk_size_data=256, chunk_overlap=20):
     from langchain.text_splitter import RecursiveCharacterTextSplitter
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size_data,
                                                    chunk_overlap=chunk_overlap)
-    chunks = text_splitter.split_documents(data)
-    return chunks
 
-def create_embeddings(chunks):
+    return text_splitter.split_documents(data_chunk)
+
+
+def create_embeddings(chunks_embeddings):
     embeddings = OpenAIEmbeddings()
-    vector_store = Chroma.from_documents(chunks, embeddings)
-    return vector_store
+    return Chroma.from_documents(chunks_embeddings, embeddings)
+
 
 def ask_and_get_answer(vector_store, q, k=3):
     from langchain.chains import RetrievalQA
@@ -43,18 +44,18 @@ def ask_and_get_answer(vector_store, q, k=3):
 
     llm = ChatOpenAI(model='gpt-3.5-turbo',
                      temperature=0.5)
-    
+
     retriever = vector_store.as_retriever(search_type='similarity',
                                           search_kwargs={'k': k})
-    
+
     chain = RetrievalQA.from_chain_type(llm=llm,
                                         chain_type='stuff',
                                         retriever=retriever)
-    
-    answer = chain.run(q)
-    return answer
 
-def print_embeddind_costs(texts):
+    return chain.run(q)
+
+
+def print_embedding_costs(texts):
     import tiktoken
     enc = tiktoken.encoding_for_model('text-embedding-ada-002')
     total_tokens = sum([len(enc.encode(page.page_content)) for page in texts])
@@ -62,16 +63,19 @@ def print_embeddind_costs(texts):
     # print(f'Embedding Cost in USD: {total_tokens / 1000 * 0.0004:.6f}')
     return total_tokens, total_tokens / 1000 * 0.0004
 
+
 def clear_history():
     if 'history' in st.session_state:
         del st.session_state['history']
 
+
 if __name__ == "__main__":
-    import os 
+    import os
     from dotenv import load_dotenv, find_dotenv
+
     load_dotenv(find_dotenv(), override=True)
 
-    #st.image('img.png')
+    # st.image('img.png')
     st.subheader('LLM Question-Answering Application')
     with st.sidebar:
         api_key = st.text_input('OpenAI API Key:', type='password')
@@ -90,17 +94,17 @@ if __name__ == "__main__":
                 with open(file_name, 'wb') as f:
                     f.write(bytes_data)
 
-                data = load_document(file_name) 
-                chunks = chunk_data(data, chunk_size=chunk_size)
+                data = load_document(file_name)
+                chunks = chunk_data(data, chunk_size_data=chunk_size)
                 st.write(f'Chunk size: {chunk_size}, Chunks: {len(chunks)}')
 
-                tokens, embeddind_costs = print_embeddind_costs(chunks)
-                st.write(f'Embedding cost: ${embeddind_costs:.4f}')
+                tokens, embedding_costs = print_embedding_costs(chunks)
+                st.write(f'Embedding cost: ${embedding_costs:.4f}')
 
                 vector_store = create_embeddings(chunks)
 
                 st.session_state.vs = vector_store
-                st.success('File uploaded, chunked and embedded successfully.') 
+                st.success('File uploaded, chunked and embedded successfully.')
 
     q = st.text_input('Ask a question about the content of your file:')
     if q:
@@ -117,5 +121,3 @@ if __name__ == "__main__":
             st.session_state.history = f'{value} \n {"-" * 100} \n {st.session_state.history}'
             h = st.session_state.history
             st.text_area(label='Chat History', value=h, key='history', height=400)
-
-            
