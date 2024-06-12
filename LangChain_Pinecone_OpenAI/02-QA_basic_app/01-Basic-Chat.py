@@ -25,6 +25,5 @@ while True:
         break
     
     response = chain.invoke({'content': content})
-    print(response)
+    print(response.content)
     print('-' * 50)
-    

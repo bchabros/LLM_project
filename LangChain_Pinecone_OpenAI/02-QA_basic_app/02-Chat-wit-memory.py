@@ -1,5 +1,5 @@
 from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv(), override=False) 
+load_dotenv(find_dotenv(), override=False)
 
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage
@@ -11,7 +11,7 @@ from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, Me
 
 llm = ChatOpenAI(model_name='gpt-3.5-turbo', temperature=1)
 
-# 2. Create memory 
+# 2. Create memory
 memory = ConversationBufferMemory(
     memory_key='chat_history',
     return_messages=True
@@ -40,8 +40,7 @@ while True:
     if content.lower() in ['quit', 'exit', 'bye']:
         print('Goodbye!')
         break
-    
+
     response = chain.invoke({'content': content})
     print(response)
     print('-' * 50)
-    
