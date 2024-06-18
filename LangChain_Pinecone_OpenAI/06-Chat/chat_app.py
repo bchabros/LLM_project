@@ -53,7 +53,7 @@ with st.sidebar:
 # message('this is chatgpt', is_user=False)
 # message('this is the user', is_user=True)
 
-# adding a default SystemMessage if the user didn't entered one
+# adding a default SystemMessage if the user didn't enter one
 if len(st.session_state.messages) >= 1:
     if not isinstance(st.session_state.messages[0], SystemMessage):
         st.session_state.messages.insert(0, SystemMessage(content='You are a helpful assistant.'))
